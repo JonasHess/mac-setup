@@ -5,11 +5,26 @@
 # -----------------------------------------------------------------------------
 
 # === Homebrew taps =====================================================
-BREW_TAPS=(
-  homebrew/cask-fonts
+# (homebrew/cask-fonts was deprecated/removed — nerd fonts live in core now.)
+BREW_TAPS=()
+
+# === WAVE 1: essentials (installed BEFORE the dotfiles) ================
+# Just enough to clone + stow the dotfiles and get a working shell/prompt.
+BREW_PACKAGES_ESSENTIAL=(
+  git                      # clone the dotfiles repo
+  stow                     # symlink the dotfiles into $HOME
+  zsh                      # the shell the dotfiles configure
+  zsh-syntax-highlighting
+  neovim                   # .nvimrc
+  tmux                     # .tmux.conf
+  fzf
+)
+BREW_CASKS_ESSENTIAL=(
+  font-jetbrains-mono-nerd-font   # glyphs for the powerlevel10k prompt
 )
 
-# === Homebrew formulae (command-line tools) ============================
+# === WAVE 2: everything else (installed AFTER the dotfiles) ============
+# Heavier and optional tools and CLI utilities.
 BREW_PACKAGES=(
   ansible
   argocd
@@ -20,15 +35,16 @@ BREW_PACKAGES=(
   azure-cli
   bash-completion
   bat
+  colima
   curl
+  docker
+  docker-compose
   doxygen
   fblog
   ffmpeg
-  fzf
   gettext
   gh
   gifsicle
-  git
   go
   gpg
   helm
@@ -46,8 +62,7 @@ BREW_PACKAGES=(
   less
   lf
   libevent
-  neofetch
-  neovim
+  fastfetch
   nmap
   node
   nvm
@@ -61,9 +76,7 @@ BREW_PACKAGES=(
   speedtest-cli
   sqlite
   ssh-copy-id
-  stow
   tldr
-  tmux
   toilet
   tree-sitter
   unar
@@ -73,29 +86,25 @@ BREW_PACKAGES=(
   yarn
   yq
   zellij
-  zsh
-  zsh-syntax-highlighting
 )
 
 # === Homebrew casks (GUI applications) =================================
 BREW_CASKS=(
-  adobe-acrobat-reader
   alacritty
-  bitwarden
-  brave-browser
+  alt-tab
+  appcleaner
   chromium
   dbeaver-community
-  docker
   drawio
   elgato-camera-hub
   firefox
-  font-jetbrains-mono-nerd-font
-  google-cloud-sdk
-  handbrake
+  gcloud-cli
+  handbrake-app
+  hiddenbar
   intellij-idea
   kdiff3
   licecap
-  logi-options-plus
+  logi-options+
   microsoft-edge
   microsoft-office
   microsoft-remote-desktop
@@ -105,9 +114,9 @@ BREW_CASKS=(
   raycast
   rectangle
   sequel-ace
+  skim
   slack
   spotify
-  sublime-text
   transmit
   visual-studio-code
   vlc

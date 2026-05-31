@@ -54,6 +54,7 @@ fi
 
 # --- sane defaults so a config can omit anything it doesn't use -------------
 BREW_TAPS=() BREW_PACKAGES=() BREW_CASKS=() MAS_APPS=()
+BREW_PACKAGES_ESSENTIAL=() BREW_CASKS_ESSENTIAL=()
 CASK_APPDIR="/Applications"
 DOTFILES_REPO="" DOTFILES_DEST="$HOME/repos/dotfiles" DOTFILES_VERSION="main"
 DOTFILES_ACCEPT_HOSTKEY=false DOTFILES_FILES=()
@@ -86,11 +87,20 @@ printf '%s%s\n' "$_C_BOLD" "mac-setup — using config: $CONFIG_FILE"
 [ "$DRY_RUN" = "true" ] && warn "DRY RUN: no changes will be made."
 
 ensure_homebrew
-install_homebrew_bundle
+
+# Wave 1: essentials needed to install and use the dotfiles.
+install_homebrew_essential
+
+# Dotfiles + macOS settings, now that the essentials (e.g. stow) are present.
 clone_dotfiles
 link_dotfiles
 run_macos_script
 clear_dock
+
+# Wave 2: the heavier / optional tools and apps.
+install_homebrew_main
+
+# Language packages depend on tools from wave 2 (node, pipx, ...).
 install_language_packages
 
 section "Done"

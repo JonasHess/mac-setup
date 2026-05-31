@@ -18,13 +18,23 @@ clone_dotfiles() {
   version="${DOTFILES_VERSION:-main}"
 
   if [ -d "$dest/.git" ]; then
+    # Repo already present — try to update, but don't abort the whole setup if
+    # the remote is unreachable (offline / SSH / auth). Continue with what's
+    # already checked out so the rest of the run (apps, etc.) still proceeds.
     info "Repo exists at $dest — updating to '$version'"
-    run git -C "$dest" fetch --all --prune
-    run git -C "$dest" checkout "$version"
-    run git -C "$dest" pull --ff-only origin "$version"
+    if run git -C "$dest" fetch --all --prune \
+       && run git -C "$dest" checkout "$version" \
+       && run git -C "$dest" pull --ff-only origin "$version"; then
+      :
+    else
+      warn "Could not update the dotfiles repo (offline, or SSH/auth issue) — continuing with the existing checkout."
+    fi
   else
     run mkdir -p "$(dirname "$dest")"
-    run git clone --branch "$version" "$DOTFILES_REPO" "$dest"
+    if ! run git clone --branch "$version" "$DOTFILES_REPO" "$dest"; then
+      warn "Could not clone the dotfiles repo — skipping dotfiles setup. Fix access (SSH key?) and re-run."
+      return 0
+    fi
   fi
 
   # Pull in submodules (e.g. powerlevel10k, zsh plugins). Non-fatal: a single
@@ -76,21 +86,37 @@ _stow_dotfiles() {
   # Pre-flight: ask stow what it would do and back up any conflicting files
   # (real files/dirs not owned by stow) so the real run doesn't fail.
   local sim
-  sim="$(stow --no --verbose=2 --dir "$dest" --target "$target" . 2>&1 || true)"
+  sim="$(stow --no --verbose=2 --restow --dir "$dest" --target "$target" . 2>&1 || true)"
   local backup_dir="$HOME/.mac-setup-backups/$BACKUP_STAMP"
 
-  local line conflict
+  local line conflict seen=" "
   while IFS= read -r line; do
+    conflict=""
     case "$line" in
-      *"existing target is neither a link nor a directory:"*|*"existing target is not owned by stow:"*)
+      # Newer stow: "* cannot stow <src> over existing target <PATH> since ..."
+      *"cannot stow"*"over existing target "*" since "*)
+        conflict="${line#*over existing target }"
+        conflict="${conflict% since *}"
+        ;;
+      # Older stow: "* existing target is neither a link nor a directory: <PATH>"
+      *"existing target is neither a link nor a directory: "*|*"existing target is not owned by stow: "*)
         conflict="${line##*: }"
-        local from="$target/$conflict"
-        local to="$backup_dir/$conflict"
-        run mkdir -p "$(dirname "$to")"
-        run mv "$from" "$to"
-        info "Backed up conflicting $conflict to $backup_dir/"
         ;;
     esac
+    [ -n "$conflict" ] || continue
+
+    # Stow may report the same conflict more than once — handle each only once.
+    case "$seen" in *" $conflict "*) continue ;; esac
+    seen="$seen$conflict "
+
+    local from="$target/$conflict"
+    local to="$backup_dir/$conflict"
+    # Skip if it's already gone (e.g. handled on a previous run).
+    [ -e "$from" ] || [ -L "$from" ] || continue
+
+    run mkdir -p "$(dirname "$to")"
+    run mv "$from" "$to"
+    info "Backed up conflicting $conflict to $backup_dir/"
   done <<EOF
 $sim
 EOF

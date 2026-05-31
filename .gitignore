@@ -1,5 +1,5 @@
-# Generated Brewfile written during a run
-.Brewfile.generated
+# Generated Brewfiles written during a run (one per install wave)
+.Brewfile.*
 
 # macOS cruft
 .DS_Store

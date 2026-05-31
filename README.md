@@ -22,13 +22,16 @@ be replaced is backed up first.
 
 A run does, in order:
 
-1. **Homebrew** — installs Homebrew itself if missing, then installs all taps,
-   formulae, casks and Mac App Store apps from your config via `brew bundle`.
-2. **Dotfiles** — clones (or updates) your dotfiles repo (including submodules)
+1. **Homebrew** — installs Homebrew itself if missing.
+2. **Wave 1 (essentials)** — installs `*_ESSENTIAL` formulae/casks: just enough
+   to set up and use your dotfiles (e.g. `stow`, the shell, the prompt font).
+3. **Dotfiles** — clones (or updates) your dotfiles repo (including submodules)
    and links it into `$HOME` via GNU Stow or per-file symlinks, backing up
    anything already there.
-3. **macOS defaults** — runs your system-preferences script (e.g. `~/.osx`).
-4. **Language packages** — optional global npm / pip / gem installs.
+4. **macOS defaults** — runs your system-preferences script (e.g. `~/.osx`).
+5. **Wave 2 (the rest)** — installs `BREW_PACKAGES` / `BREW_CASKS` / `MAS_APPS`:
+   all the heavier and optional tools and apps.
+6. **Language packages** — optional global npm / pip / gem installs.
 
 ## Usage
 
@@ -69,8 +72,10 @@ All options are documented in [`configs/example.sh`](configs/example.sh). In sho
 | Variable | Purpose |
 | --- | --- |
 | `BREW_TAPS` | Extra Homebrew package sources |
-| `BREW_PACKAGES` | Formulae (command-line tools) |
-| `BREW_CASKS` | Casks (GUI apps) |
+| `BREW_PACKAGES_ESSENTIAL` | Wave 1 formulae — installed before dotfiles |
+| `BREW_CASKS_ESSENTIAL` | Wave 1 casks — installed before dotfiles |
+| `BREW_PACKAGES` | Wave 2 formulae (command-line tools) |
+| `BREW_CASKS` | Wave 2 casks (GUI apps) |
 | `CASK_APPDIR` | Where casks install `.app`s (default `/Applications`) |
 | `MAS_APPS` | Mac App Store apps, as `"Name\|id"` |
 | `DOTFILES_REPO` | Git URL of your dotfiles repo |

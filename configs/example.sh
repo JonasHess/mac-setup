@@ -13,7 +13,24 @@ BREW_TAPS=(
   # homebrew/cask-fonts
 )
 
-# === Homebrew formulae (command-line tools) ============================
+# Installation happens in two waves:
+#   WAVE 1 (*_ESSENTIAL) is installed BEFORE the dotfiles — put here only what
+#          you need to clone + link the dotfiles and get a usable shell.
+#   WAVE 2 (BREW_PACKAGES / BREW_CASKS) is installed AFTER the dotfiles — all
+#          the heavier and optional tools and apps.
+# If you link dotfiles with stow, put `stow` in BREW_PACKAGES_ESSENTIAL.
+
+# === WAVE 1: essential formulae + casks (installed first) ==============
+BREW_PACKAGES_ESSENTIAL=(
+  # git
+  # stow
+  # neovim
+)
+BREW_CASKS_ESSENTIAL=(
+  # font-jetbrains-mono-nerd-font
+)
+
+# === WAVE 2: formulae (command-line tools) =============================
 BREW_PACKAGES=(
   git
   fzf
@@ -21,7 +38,7 @@ BREW_PACKAGES=(
   neovim
 )
 
-# === Homebrew casks (GUI applications) =================================
+# === WAVE 2: casks (GUI applications) ==================================
 # Find names at https://brew.sh or with `brew search <name>`.
 BREW_CASKS=(
   # google-chrome
