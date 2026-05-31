@@ -56,6 +56,8 @@ BREW_PACKAGES=(
   jenv
   jq
   k9s
+  kubecm
+  kubectx
   kubernetes-cli
   lazydocker
   lazygit
