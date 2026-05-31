@@ -1,0 +1,8 @@
+# Generated Brewfile written during a run
+.Brewfile.generated
+
+# macOS cruft
+.DS_Store
+
+# Local-only scratch configs (commit real ones explicitly)
+configs/*.local.sh
