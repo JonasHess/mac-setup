@@ -96,3 +96,10 @@ CLEAR_DOCK=false
 NPM_PACKAGES=()                           # global npm installs
 PIP_PACKAGES=()                           # installed via pipx if present, else pip3
 GEM_PACKAGES=()                           # global gem installs
+
+# SDKMAN candidates as "<candidate> <version>". Installs SDKMAN if missing, then
+# runs `sdk install <candidate> <version>` for each. Empty by default.
+SDKMAN_CANDIDATES=(
+  # "java 17.0.19-amzn"
+  # "maven 3.9.9"
+)

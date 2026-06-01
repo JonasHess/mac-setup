@@ -60,7 +60,7 @@ DOTFILES_REPO="" DOTFILES_DEST="$HOME/repos/dotfiles" DOTFILES_VERSION="main"
 DOTFILES_ACCEPT_HOSTKEY=false DOTFILES_FILES=()
 DOTFILES_METHOD="symlink" DOTFILES_STOW_TARGET="$HOME"
 MACOS_SCRIPT="" CLEAR_DOCK=false
-NPM_PACKAGES=() PIP_PACKAGES=() GEM_PACKAGES=()
+NPM_PACKAGES=() PIP_PACKAGES=() GEM_PACKAGES=() SDKMAN_CANDIDATES=()
 
 # --- load config + libraries ------------------------------------------------
 # shellcheck source=/dev/null

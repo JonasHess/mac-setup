@@ -33,6 +33,7 @@ BREW_PACKAGES=(
   autoconf
   awscli
   azure-cli
+  bash
   bash-completion
   bat
   colima
@@ -65,12 +66,14 @@ BREW_PACKAGES=(
   lf
   libevent
   fastfetch
+  maven
   nmap
   node
   nvm
   openssl
   php
   pipx
+  postgresql@18
   ranger
   rclone
   rust
@@ -118,6 +121,7 @@ BREW_CASKS=(
   sequel-ace
   skim
   slack
+  soapui
   spotify
   transmit
   visual-studio-code
@@ -169,3 +173,8 @@ CLEAR_DOCK=false
 NPM_PACKAGES=()
 PIP_PACKAGES=()
 GEM_PACKAGES=()
+
+# SDKMAN candidates ("<candidate> <version>"). Installs SDKMAN if missing.
+SDKMAN_CANDIDATES=(
+  "java 17.0.19-amzn"
+)

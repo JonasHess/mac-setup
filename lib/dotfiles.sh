@@ -129,7 +129,7 @@ EOF
 # Links each DOTFILES_FILES entry from the repo into $HOME, backing up anything
 # already there. Used when DOTFILES_METHOD=symlink.
 _symlink_dotfiles() {
-  [ "${#DOTFILES_FILES[@]:-0}" -gt 0 ] || { info "No DOTFILES_FILES listed, nothing to link"; return 0; }
+  [ "${#DOTFILES_FILES[@]}" -gt 0 ] || { info "No DOTFILES_FILES listed, nothing to link"; return 0; }
 
   section "Linking dotfiles into \$HOME"
 

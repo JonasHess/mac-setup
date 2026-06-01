@@ -88,6 +88,7 @@ All options are documented in [`configs/example.sh`](configs/example.sh). In sho
 | `MACOS_SCRIPT` | System-preferences script to run (e.g. `~/.osx --no-restart`) |
 | `CLEAR_DOCK` | `true` to empty the Dock of all pinned apps |
 | `NPM_PACKAGES` / `PIP_PACKAGES` / `GEM_PACKAGES` | Optional global packages |
+| `SDKMAN_CANDIDATES` | SDKMAN installs as `"<candidate> <version>"` (e.g. `"java 17.0.19-amzn"`); installs SDKMAN if missing |
 
 ## Notes
 
