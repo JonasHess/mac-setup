@@ -36,10 +36,7 @@ BREW_PACKAGES=(
   bash
   bash-completion
   bat
-  colima
   curl
-  docker
-  docker-compose
   doxygen
   fblog
   ffmpeg
@@ -100,6 +97,7 @@ BREW_CASKS=(
   appcleaner
   chromium
   dbeaver-community
+  docker-desktop
   drawio
   elgato-camera-hub
   firefox
@@ -108,6 +106,7 @@ BREW_CASKS=(
   hiddenbar
   intellij-idea
   kdiff3
+  keepassxc
   licecap
   logi-options+
   microsoft-edge
