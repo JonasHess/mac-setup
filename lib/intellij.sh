@@ -40,11 +40,17 @@ APPLESCRIPT
   rm -f "$src"
 
   # Declare that the app can open every file type, so Finder lists it under
-  # "Open With" for all files (public.item is the root of the UTI tree). The
-  # osacompile droplet already ships a legacy "*" CFBundleDocumentTypes entry
-  # that isn't reliable on modern macOS, so we -replace it rather than -insert.
+  # "Open With" for all files. In theory public.item (the root of the UTI tree)
+  # should cover everything; in practice modern macOS only surfaces an app for
+  # files whose UTI literally matches one of the listed types, so we enumerate
+  # the broad branches (content, data, directory, executable) explicitly.
+  # LSHandlerRank=Alternate means "I can open this, but don't make me default" —
+  # without it, Finder may still hide us behind the owning app.
+  # The osacompile droplet already ships a legacy "*" CFBundleDocumentTypes
+  # entry that isn't reliable on modern macOS, so we -replace it rather than
+  # -insert.
   run plutil -replace CFBundleDocumentTypes -json \
-    '[{"CFBundleTypeName":"All Files","CFBundleTypeRole":"Viewer","LSItemContentTypes":["public.item"]}]' \
+    '[{"CFBundleTypeName":"All Files","CFBundleTypeRole":"Viewer","LSHandlerRank":"Alternate","LSItemContentTypes":["public.item","public.content","public.data","public.directory","public.executable"]}]' \
     "$opener_app/Contents/Info.plist"
 
   # Give the app a stable bundle id so it can be named as a default handler
