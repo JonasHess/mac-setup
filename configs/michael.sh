@@ -113,6 +113,7 @@ BREW_CASKS=(
   pycharm
   raycast
   rectangle
+  royal-tsx
   sequel-ace
   skim
   slack

@@ -3,10 +3,23 @@
 # and the corresponding tool is available. Empty by default.
 
 install_language_packages() {
+  _ensure_nvm_dir
   _install_npm_packages
   _install_pip_packages
   _install_gem_packages
   _install_sdkman_candidates
+}
+
+# nvm (Homebrew formula) ships no data dir — the user must create one and point
+# NVM_DIR at it before `nvm install` works. The dotfiles set
+# NVM_DIR=$HOME/.config/nvm, so honour that if exported, else fall back to it.
+_ensure_nvm_dir() {
+  command -v brew >/dev/null 2>&1 || return 0
+  brew list --formula nvm >/dev/null 2>&1 || return 0
+  local nvm_dir="${NVM_DIR:-$HOME/.config/nvm}"
+  [ -d "$nvm_dir" ] && return 0
+  info "Creating NVM_DIR at $nvm_dir"
+  run mkdir -p "$nvm_dir"
 }
 
 # SDKMAN candidates (e.g. "java 17.0.19-amzn"). Installs SDKMAN if missing, then
