@@ -91,6 +91,20 @@ MACOS_SCRIPT=""                           # e.g. "$HOME/.osx --no-restart"
 # Start with a completely empty Dock (removes all pinned apps). Opt-in.
 CLEAR_DOCK=false
 
+# === "Open in IntelliJ" Finder integration =============================
+# Builds a small wrapper app so any file can be opened in IntelliJ's
+# lightweight LightEdit mode via Finder's right-click "Open With" menu.
+# Needs the IntelliJ cask installed (add it to BREW_CASKS).
+INTELLIJ_OPENER=false                     # set true to create the opener app
+INTELLIJ_APP_NAME="IntelliJ IDEA.app"     # "IntelliJ IDEA CE.app" for Community
+INTELLIJ_OPENER_NAME="Open in IntelliJ"   # name shown in the Open With menu
+INTELLIJ_OPENER_BUNDLE_ID="com.mac-setup.open-in-intellij"  # stable id for handlers
+# Make the opener the *default* (double-click) app for these extensions.
+# Needs `duti` (add it to BREW_PACKAGES). With/without leading dot both work.
+INTELLIJ_DEFAULT_FOR=(
+  # txt json xml yaml yml html css js ts md log csv
+)
+
 # === Optional language package managers ================================
 # These run only if non-empty AND the relevant tool is installed.
 NPM_PACKAGES=()                           # global npm installs

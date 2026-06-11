@@ -61,6 +61,10 @@ DOTFILES_ACCEPT_HOSTKEY=false DOTFILES_FILES=()
 DOTFILES_METHOD="symlink" DOTFILES_STOW_TARGET="$HOME"
 MACOS_SCRIPT="" CLEAR_DOCK=false
 NPM_PACKAGES=() PIP_PACKAGES=() GEM_PACKAGES=() SDKMAN_CANDIDATES=()
+INTELLIJ_OPENER=false INTELLIJ_APP_NAME="IntelliJ IDEA.app"
+INTELLIJ_OPENER_NAME="Open in IntelliJ"
+INTELLIJ_OPENER_BUNDLE_ID="com.mac-setup.open-in-intellij"
+INTELLIJ_DEFAULT_FOR=()
 
 # --- load config + libraries ------------------------------------------------
 # shellcheck source=/dev/null
@@ -75,6 +79,8 @@ source "$SCRIPT_DIR/lib/dotfiles.sh"
 source "$SCRIPT_DIR/lib/macos.sh"
 # shellcheck source=lib/packages.sh
 source "$SCRIPT_DIR/lib/packages.sh"
+# shellcheck source=lib/intellij.sh
+source "$SCRIPT_DIR/lib/intellij.sh"
 
 # Shared timestamp for any backups made during this run.
 BACKUP_STAMP="$(date +%Y%m%d-%H%M%S)"
@@ -99,6 +105,10 @@ clear_dock
 
 # Wave 2: the heavier / optional tools and apps.
 install_homebrew_main
+
+# "Open in IntelliJ" Finder integration (needs the IntelliJ cask from wave 2).
+install_intellij_opener
+set_intellij_default_handlers
 
 # Language packages depend on tools from wave 2 (node, pipx, ...).
 install_language_packages

@@ -38,6 +38,7 @@ BREW_PACKAGES=(
   bat
   curl
   doxygen
+  duti
   fblog
   ffmpeg
   gettext
@@ -95,6 +96,7 @@ BREW_CASKS=(
   alacritty
   alt-tab
   appcleaner
+  camunda-modeler
   chromium
   dbeaver-community
   docker-desktop
@@ -105,6 +107,7 @@ BREW_CASKS=(
   handbrake-app
   hiddenbar
   intellij-idea
+  iterm2
   kdiff3
   keepassxc
   licecap
@@ -167,6 +170,20 @@ MACOS_SCRIPT="$HOME/.osx --no-restart"
 
 # Flip to true on a device where you want to start with an empty Dock.
 CLEAR_DOCK=false
+
+# === "Open in IntelliJ" Finder integration =============================
+# Right-click any file → Open With → "Open in IntelliJ" (LightEdit mode).
+# Using the full (non-Community) edition, so the default app name is correct.
+INTELLIJ_OPENER=true
+
+# Make the opener the default (double-click) app for these text-ish types.
+# Requires `duti` (in BREW_PACKAGES above).
+INTELLIJ_DEFAULT_FOR=(
+  txt json xml edi html htm
+  yaml yml csv tsv log md
+  ini conf cfg properties toml
+  js ts css sql sh
+)
 
 # === Optional language package managers ================================
 NPM_PACKAGES=()
