@@ -64,7 +64,6 @@ BREW_PACKAGES=(
   lf
   libevent
   fastfetch
-  maven
   nmap
   node
   nvm
@@ -72,6 +71,7 @@ BREW_PACKAGES=(
   php
   pipx
   postgresql@18
+  pre-commit
   putty
   ranger
   rclone
@@ -191,5 +191,6 @@ GEM_PACKAGES=()
 
 # SDKMAN candidates ("<candidate> <version>"). Installs SDKMAN if missing.
 SDKMAN_CANDIDATES=(
-  "java 17.0.19-amzn"
+  "java 25.0.3-amzn"
+  "maven 3.9.16"
 )
