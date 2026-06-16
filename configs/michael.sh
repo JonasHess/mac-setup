@@ -85,6 +85,7 @@ BREW_PACKAGES=(
   tree-sitter
   unar
   util-linux
+  uv                       # Python toolchain — needed by uv-git MCP servers
   wget
   wireshark
   yarn
@@ -194,3 +195,19 @@ SDKMAN_CANDIDATES=(
   "java 25.0.3-amzn"
   "maven 3.9.16"
 )
+
+# === Claude Code MCP servers ===========================================
+# Secrets (REDMINE_API_KEY, ...) are exported from dotfiles/secrets.zsh —
+# never written to ~/.claude.json. See lib/mcp.sh for the full contract.
+MCP_SERVERS=(
+  redmine
+)
+
+# --- redmine: MVB Redmine at pm.dev.booklan.de (snowild/redmine-mcp) -----
+MCP_REDMINE_TYPE="uv-git"
+MCP_REDMINE_REPO="https://github.com/snowild/redmine-mcp.git"
+MCP_REDMINE_DEST="$HOME/IdeaProjects/redmine-mcp"
+MCP_REDMINE_BIN="$HOME/.local/bin/redmine-mcp"
+MCP_REDMINE_PYTHON="3.12"
+MCP_REDMINE_ENV=("REDMINE_DOMAIN=https://pm.dev.booklan.de")
+MCP_REDMINE_REQUIRES=("REDMINE_API_KEY")

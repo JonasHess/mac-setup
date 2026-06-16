@@ -61,6 +61,7 @@ DOTFILES_ACCEPT_HOSTKEY=false DOTFILES_FILES=()
 DOTFILES_METHOD="symlink" DOTFILES_STOW_TARGET="$HOME"
 MACOS_SCRIPT="" CLEAR_DOCK=false
 NPM_PACKAGES=() PIP_PACKAGES=() GEM_PACKAGES=() SDKMAN_CANDIDATES=()
+MCP_SERVERS=()
 INTELLIJ_OPENER=false INTELLIJ_APP_NAME="IntelliJ IDEA.app"
 INTELLIJ_OPENER_NAME="Open in IntelliJ"
 INTELLIJ_OPENER_BUNDLE_ID="com.mac-setup.open-in-intellij"
@@ -81,6 +82,8 @@ source "$SCRIPT_DIR/lib/macos.sh"
 source "$SCRIPT_DIR/lib/packages.sh"
 # shellcheck source=lib/intellij.sh
 source "$SCRIPT_DIR/lib/intellij.sh"
+# shellcheck source=lib/mcp.sh
+source "$SCRIPT_DIR/lib/mcp.sh"
 
 # Shared timestamp for any backups made during this run.
 BACKUP_STAMP="$(date +%Y%m%d-%H%M%S)"
@@ -112,6 +115,10 @@ set_intellij_default_handlers
 
 # Language packages depend on tools from wave 2 (node, pipx, ...).
 install_language_packages
+
+# Claude Code MCP servers depend on the tools each server's type uses (uv, npx,
+# ...), all of which live in wave 2 — so this comes last.
+install_mcp_servers
 
 section "Done"
 info "Setup complete for config: $CONFIG_FILE"

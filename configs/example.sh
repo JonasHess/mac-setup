@@ -117,3 +117,40 @@ SDKMAN_CANDIDATES=(
   # "java 17.0.19-amzn"
   # "maven 3.9.9"
 )
+
+# === Claude Code MCP (Model Context Protocol) servers ==================
+# List the servers you want, then declare each with a block of MCP_<NAME>_*
+# variables. Re-runs are safe — checkouts are pulled and registrations
+# replaced. Secrets must be exported in your shell (typically by sourcing a
+# gitignored secrets file from your .zshrc); they are NOT written into
+# ~/.claude.json. If a required secret is missing and the script is running
+# interactively, it prompts (input hidden) and appends an `export …` line to
+# the secrets file. Set MCP_SECRETS_FILE to point at it; defaults to
+# "$DOTFILES_DEST/secrets.zsh".
+MCP_SECRETS_FILE="$DOTFILES_DEST/secrets.zsh"
+MCP_SERVERS=(
+  # redmine
+  # github
+)
+
+# --- Type: uv-git (clone, uv sync, uv tool install) -----------------------
+# Good for Python MCP servers distributed as a source repo.
+# MCP_REDMINE_TYPE="uv-git"
+# MCP_REDMINE_REPO="https://github.com/snowild/redmine-mcp.git"
+# MCP_REDMINE_DEST="$HOME/IdeaProjects/redmine-mcp"
+# MCP_REDMINE_BIN="$HOME/.local/bin/redmine-mcp"
+# MCP_REDMINE_PYTHON="3.12"                            # optional version pin
+# MCP_REDMINE_ENV=("REDMINE_DOMAIN=https://redmine.example.com")
+# MCP_REDMINE_REQUIRES=("REDMINE_API_KEY")             # must be exported
+
+# --- Type: npx (no pre-install; child process runs `npx <pkg>`) -----------
+# Common shape for official GitHub/GitLab MCP servers.
+# MCP_GITHUB_TYPE="npx"
+# MCP_GITHUB_PACKAGE="@modelcontextprotocol/server-github"
+# MCP_GITHUB_NPX_ARGS=("-y")
+# MCP_GITHUB_REQUIRES=("GITHUB_PERSONAL_ACCESS_TOKEN")
+
+# --- Type: command (a binary already on PATH) -----------------------------
+# MCP_FOO_TYPE="command"
+# MCP_FOO_COMMAND="/usr/local/bin/some-mcp-server"
+# MCP_FOO_ARGS=("--port" "0")
