@@ -100,6 +100,7 @@ BREW_CASKS=(
   appcleaner
   camunda-modeler
   chromium
+  cyberduck
   dbeaver-community
   docker-desktop
   drawio
@@ -124,7 +125,6 @@ BREW_CASKS=(
   slack
   soapui
   spotify
-  transmit
   visual-studio-code
   vlc
   whatsapp
