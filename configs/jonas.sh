@@ -207,6 +207,8 @@ SECRETS_FILE="$DOTFILES_DEST/.oh-my-zsh/custom/secrets.zsh"
 MCP_SERVERS=(
   redmine
   postgres
+  postgres-staging
+  postgres-sandbox
 )
 
 # --- redmine: MVB Redmine at pm.dev.booklan.de (snowild/redmine-mcp) -----
@@ -230,3 +232,27 @@ MCP_POSTGRES_BIN="$HOME/.local/bin/postgres-mcp"
 MCP_POSTGRES_PYTHON="3.12"
 MCP_POSTGRES_REQUIRES=("DATABASE_URI=PUBX_DATABASE_URI")
 MCP_POSTGRES_ARGS=("--access-mode=unrestricted")
+
+# --- postgres-staging: shared staging pubx DB (read-only) ---------------
+# Reuses the postgres-mcp binary installed by the `postgres` server above —
+# only the DATABASE_URI env and access mode differ. Connection URI lives in
+# $SECRETS_FILE as PUBX_STAGING_DATABASE_URI.
+MCP_POSTGRES_STAGING_TYPE="uv-git"
+MCP_POSTGRES_STAGING_REPO="https://github.com/crystaldba/postgres-mcp.git"
+MCP_POSTGRES_STAGING_DEST="$HOME/IdeaProjects/postgres-mcp"
+MCP_POSTGRES_STAGING_BIN="$HOME/.local/bin/postgres-mcp"
+MCP_POSTGRES_STAGING_PYTHON="3.12"
+MCP_POSTGRES_STAGING_REQUIRES=("DATABASE_URI=PUBX_STAGING_DATABASE_URI")
+MCP_POSTGRES_STAGING_ARGS=("--access-mode=restricted")
+
+# --- postgres-sandbox: shared sandbox pubx DB (read-only) ---------------
+# Reuses the postgres-mcp binary installed by the `postgres` server above —
+# only the DATABASE_URI env and access mode differ. Connection URI lives in
+# $SECRETS_FILE as PUBX_SANDBOX_DATABASE_URI.
+MCP_POSTGRES_SANDBOX_TYPE="uv-git"
+MCP_POSTGRES_SANDBOX_REPO="https://github.com/crystaldba/postgres-mcp.git"
+MCP_POSTGRES_SANDBOX_DEST="$HOME/IdeaProjects/postgres-mcp"
+MCP_POSTGRES_SANDBOX_BIN="$HOME/.local/bin/postgres-mcp"
+MCP_POSTGRES_SANDBOX_PYTHON="3.12"
+MCP_POSTGRES_SANDBOX_REQUIRES=("DATABASE_URI=PUBX_SANDBOX_DATABASE_URI")
+MCP_POSTGRES_SANDBOX_ARGS=("--access-mode=restricted")
