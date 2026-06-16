@@ -197,12 +197,15 @@ SDKMAN_CANDIDATES=(
 )
 
 # === Claude Code MCP servers ===========================================
-# Secrets (REDMINE_API_KEY, ...) live in oh-my-zsh's custom dir, which it
-# auto-sources on every shell start; they are never written to ~/.claude.json.
-# See lib/mcp.sh for the full contract.
+# Secrets (REDMINE_API_KEY, PUBX_DATABASE_URI, ...) live in $SECRETS_FILE
+# under oh-my-zsh's custom dir, where oh-my-zsh auto-sources every *.zsh file
+# on shell start. They are forwarded into the MCP server's env via
+# MCP_<N>_REQUIRES; never written into the Claude Code config. See lib/mcp.sh
+# for the full contract.
 SECRETS_FILE="$DOTFILES_DEST/.oh-my-zsh/custom/secrets.zsh"
 MCP_SERVERS=(
   redmine
+  postgres
 )
 
 # --- redmine: MVB Redmine at pm.dev.booklan.de (snowild/redmine-mcp) -----
@@ -213,3 +216,16 @@ MCP_REDMINE_BIN="$HOME/.local/bin/redmine-mcp"
 MCP_REDMINE_PYTHON="3.12"
 MCP_REDMINE_ENV=("REDMINE_DOMAIN=https://pm.dev.booklan.de")
 MCP_REDMINE_REQUIRES=("REDMINE_API_KEY")
+
+# --- postgres: local Docker postgres "pubx" (crystaldba/postgres-mcp) -----
+# Unrestricted mode (writes allowed) — drop the --access-mode flag from ARGS
+# for read-only. Connection URI lives in $SECRETS_FILE as PUBX_DATABASE_URI
+# (e.g. postgresql://postgres:password@localhost:5432/pubx) and is forwarded
+# to the MCP server as DATABASE_URI via the REQUIRES rename syntax.
+MCP_POSTGRES_TYPE="uv-git"
+MCP_POSTGRES_REPO="https://github.com/crystaldba/postgres-mcp.git"
+MCP_POSTGRES_DEST="$HOME/IdeaProjects/postgres-mcp"
+MCP_POSTGRES_BIN="$HOME/.local/bin/postgres-mcp"
+MCP_POSTGRES_PYTHON="3.12"
+MCP_POSTGRES_REQUIRES=("DATABASE_URI=PUBX_DATABASE_URI")
+MCP_POSTGRES_ARGS=("--access-mode=unrestricted")

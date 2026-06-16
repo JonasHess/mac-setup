@@ -9,11 +9,23 @@
 # reads MCP_REDMINE_TYPE):
 #
 #   MCP_<N>_TYPE       (required)  uv-git | npx | command
-#   MCP_<N>_REQUIRES   (optional)  array of env vars that must already be
-#                                  exported in this shell (typically secrets
-#                                  sourced from your dotfiles' secrets file)
+#   MCP_<N>_REQUIRES   (optional)  array of shell env vars that must be set
+#                                  before install (typically secrets sourced
+#                                  from your dotfiles' secrets file). Each
+#                                  entry is also auto-forwarded to the MCP
+#                                  server's environment:
+#                                    "FOO"             → require shell var FOO,
+#                                                       forward as FOO=$FOO
+#                                    "MCP_NAME=SHELL"  → require shell var
+#                                                       SHELL, forward as
+#                                                       MCP_NAME=$SHELL (use
+#                                                       this when the secret
+#                                                       lives under a different
+#                                                       name in your shell)
 #   MCP_<N>_ENV        (optional)  array of "KEY=VALUE" non-secret env vars,
-#                                  passed to `claude mcp add -e`
+#                                  passed to `claude mcp add -e`. Takes
+#                                  precedence over REQUIRES auto-forwarding
+#                                  if both define the same KEY.
 #
 # Per-type variables:
 #
@@ -22,6 +34,7 @@
 #     MCP_<N>_DEST     local checkout path
 #     MCP_<N>_BIN      absolute path of the installed binary (registered as cmd)
 #     MCP_<N>_PYTHON   (optional) Python version pin, e.g. "3.12"
+#     MCP_<N>_ARGS     (optional) array of subprocess args
 #
 #   npx — register an npx invocation (no pre-install):
 #     MCP_<N>_PACKAGE  npm package, e.g. "@modelcontextprotocol/server-github"
@@ -72,6 +85,18 @@ _mcp_array() {
 
 _mcp_secrets_file() {
   printf '%s' "${SECRETS_FILE:-${DOTFILES_DEST:-$HOME}/secrets.zsh}"
+}
+
+# Split a REQUIRES entry into "mcp_env_name shell_var_name". A plain "FOO"
+# maps to "FOO FOO" (auto-forward under the same name); "MCP=SHELL" maps to
+# "MCP SHELL" (rename: require shell var SHELL, forward as MCP=$SHELL).
+_mcp_split_required() {
+  local entry="$1"
+  if [[ "$entry" == *=* ]]; then
+    printf '%s %s' "${entry%%=*}" "${entry#*=}"
+  else
+    printf '%s %s' "$entry" "$entry"
+  fi
 }
 
 # Resolve a missing required var. Returns 0 if the var is now exported in this
@@ -135,12 +160,15 @@ _install_one_mcp() {
   # one is missing, try to prompt the user and persist the value to the secrets
   # file (default: $DOTFILES_DEST/secrets.zsh). Fall back to skip on dry-run,
   # when there is no TTY, or when the value is already in the file but just
-  # hasn't been sourced into this shell.
-  local req
+  # hasn't been sourced into this shell. Each REQUIRES entry is also forwarded
+  # to the MCP server's env at register time (see _mcp_register).
+  local req shell_var
   while IFS= read -r req; do
     [ -n "$req" ] || continue
-    if [ -z "${!req:-}" ]; then
-      _mcp_prompt_secret "$name" "$req" || return 0
+    # shellcheck disable=SC2034
+    read -r _ shell_var <<<"$(_mcp_split_required "$req")"
+    if [ -z "${!shell_var:-}" ]; then
+      _mcp_prompt_secret "$name" "$shell_var" || return 0
     fi
   done < <(_mcp_array "$u" REQUIRES)
 
@@ -189,7 +217,12 @@ _mcp_install_uv_git() {
     ( cd "$dest" && run uv tool install --force . )
   fi
 
-  _mcp_register "$name" "$u" "$bin"
+  local -a extra=()
+  local line
+  while IFS= read -r line; do
+    [ -n "$line" ] && extra+=("$line")
+  done < <(_mcp_array "$u" ARGS)
+  _mcp_register "$name" "$u" "$bin" "${extra[@]}"
 }
 
 _mcp_install_npx() {
@@ -232,7 +265,15 @@ _mcp_register() {
   local name="$1" u="$2"; shift 2
 
   local -a env_flags=()
-  local line
+  local line mcp_name shell_var
+  # REQUIRES first: auto-forward each required shell var as MCP env. ENV
+  # comes next so a literal "KEY=value" in ENV overrides any REQUIRES entry
+  # with the same KEY (claude mcp add -e takes last-wins semantics).
+  while IFS= read -r line; do
+    [ -n "$line" ] || continue
+    read -r mcp_name shell_var <<<"$(_mcp_split_required "$line")"
+    env_flags+=(-e "$mcp_name=${!shell_var:-}")
+  done < <(_mcp_array "$u" REQUIRES)
   while IFS= read -r line; do
     [ -n "$line" ] && env_flags+=(-e "$line")
   done < <(_mcp_array "$u" ENV)
