@@ -125,9 +125,9 @@ SDKMAN_CANDIDATES=(
 # gitignored secrets file from your .zshrc); they are NOT written into
 # ~/.claude.json. If a required secret is missing and the script is running
 # interactively, it prompts (input hidden) and appends an `export …` line to
-# the secrets file. Set MCP_SECRETS_FILE to point at it; defaults to
-# "$DOTFILES_DEST/secrets.zsh".
-MCP_SECRETS_FILE="$DOTFILES_DEST/secrets.zsh"
+# the secrets file. Set SECRETS_FILE to point at it (a generic var, not
+# MCP-specific); defaults to "$DOTFILES_DEST/secrets.zsh".
+SECRETS_FILE="$DOTFILES_DEST/secrets.zsh"
 MCP_SERVERS=(
   # redmine
   # github

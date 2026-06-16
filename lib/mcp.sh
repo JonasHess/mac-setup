@@ -71,7 +71,7 @@ _mcp_array() {
 }
 
 _mcp_secrets_file() {
-  printf '%s' "${MCP_SECRETS_FILE:-${DOTFILES_DEST:-$HOME}/secrets.zsh}"
+  printf '%s' "${SECRETS_FILE:-${DOTFILES_DEST:-$HOME}/secrets.zsh}"
 }
 
 # Resolve a missing required var. Returns 0 if the var is now exported in this

@@ -28,6 +28,10 @@ _install_sdkman_candidates() {
   [ "${#SDKMAN_CANDIDATES[@]}" -gt 0 ] || return 0
   section "Installing SDKMAN candidates"
 
+  # Snapshot the config's list NOW: sourcing sdkman-init.sh below defines its
+  # own array named SDKMAN_CANDIDATES (the entire catalog), clobbering ours.
+  local -a _candidates=("${SDKMAN_CANDIDATES[@]}")
+
   local sdkman_dir="${SDKMAN_DIR:-$HOME/.sdkman}"
   local init="$sdkman_dir/bin/sdkman-init.sh"
 
@@ -39,7 +43,7 @@ _install_sdkman_candidates() {
 
   local candidate
   if [ "${DRY_RUN:-false}" = "true" ]; then
-    for candidate in "${SDKMAN_CANDIDATES[@]}"; do
+    for candidate in "${_candidates[@]}"; do
       [ -n "$candidate" ] && printf '%s  [dry-run] sdk install %s%s\n' "$_C_YELLOW" "$candidate" "$_C_RESET"
     done
     return 0
@@ -50,21 +54,31 @@ _install_sdkman_candidates() {
     return 0
   fi
 
-  # SDKMAN's init isn't strict-mode friendly; relax set -u around it.
-  sdkman_auto_answer=true          # auto-accept the "set as default?" prompt
+  # SDKMAN's init AND its `sdk` function reference unset vars (e.g. the version
+  # arg $2), so neither is strict-mode safe. Relax `set -u` for the whole
+  # sourcing + install block and restore it only once we're done.
+  sdkman_auto_answer=false         # prompt before setting a candidate as default
   set +u
   # shellcheck disable=SC1090
   source "$init"
-  set -u
 
-  for candidate in "${SDKMAN_CANDIDATES[@]}"; do
-    [ -n "$candidate" ] || continue
-    info "sdk install $candidate"
+  for candidate in "${_candidates[@]}"; do
     # Word-split "java 17.0.19-amzn" into candidate + version (intentional).
-    if ! sdk install ${candidate} </dev/null; then
-      warn "sdk install $candidate failed"
+    # shellcheck disable=SC2086
+    set -- ${candidate}
+    # Skip empty or whitespace-only entries: a bare `sdk install` (no name)
+    # makes SDKMAN sweep its entire candidate catalog, which we never want.
+    if [ "$#" -eq 0 ]; then
+      warn "skipping empty SDKMAN candidate entry"
+      continue
+    fi
+    info "sdk install $*"
+    if ! sdk install "$@" </dev/null; then
+      warn "sdk install $* failed"
     fi
   done
+
+  set -u
 }
 
 _install_npm_packages() {

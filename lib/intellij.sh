@@ -92,9 +92,18 @@ set_intellij_default_handlers() {
   warn "macOS will show one confirmation dialog per file type (${#INTELLIJ_DEFAULT_FOR[@]} total)."
   warn "For each, click the button that ACCEPTS the change — the highlighted one"
   warn "labelled \"Change\" or \"Use \"$opener_name\"\". Do NOT click \"Keep current\" / \"Cancel\"."
-  # Give an interactive user a chance to bail before the dialog barrage.
+  # Give an interactive user a chance to skip the dialog barrage without
+  # aborting the whole setup run — answering "n" skips *this* step only, so the
+  # rest of the run (e.g. MCP servers) still executes.
   if [ -t 0 ] && [ "${DRY_RUN:-false}" != "true" ]; then
-    read -r -p "    Press Enter to continue, or Ctrl-C to skip... " _
+    local _ans
+    read -r -p "    Set default handlers now? [Y/n] " _ans
+    case "${_ans:-y}" in
+      [Nn]*)
+        warn "Skipping default-handler changes. Right-click 'Open With' still works."
+        return 0
+        ;;
+    esac
   fi
 
   local ext skipped=()

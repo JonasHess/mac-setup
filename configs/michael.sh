@@ -197,8 +197,10 @@ SDKMAN_CANDIDATES=(
 )
 
 # === Claude Code MCP servers ===========================================
-# Secrets (REDMINE_API_KEY, ...) are exported from dotfiles/secrets.zsh —
-# never written to ~/.claude.json. See lib/mcp.sh for the full contract.
+# Secrets (REDMINE_API_KEY, ...) live in oh-my-zsh's custom dir, which it
+# auto-sources on every shell start; they are never written to ~/.claude.json.
+# See lib/mcp.sh for the full contract.
+SECRETS_FILE="$DOTFILES_DEST/.oh-my-zsh/custom/secrets.zsh"
 MCP_SERVERS=(
   redmine
 )
