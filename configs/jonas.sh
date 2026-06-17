@@ -209,6 +209,7 @@ MCP_SERVERS=(
   postgres
   postgres-staging
   postgres-sandbox
+  gitlab
 )
 
 # --- redmine: MVB Redmine at pm.dev.booklan.de (snowild/redmine-mcp) -----
@@ -256,3 +257,16 @@ MCP_POSTGRES_SANDBOX_BIN="$HOME/.local/bin/postgres-mcp"
 MCP_POSTGRES_SANDBOX_PYTHON="3.12"
 MCP_POSTGRES_SANDBOX_REQUIRES=("DATABASE_URI=PUBX_SANDBOX_DATABASE_URI")
 MCP_POSTGRES_SANDBOX_ARGS=("--access-mode=restricted")
+
+# --- gitlab: self-hosted MVB GitLab (zereight/mcp-gitlab, read-only) -----
+# Read-only mode: list/read projects, MRs, issues, files. Drop the
+# GITLAB_READ_ONLY_MODE env entry to allow writes. PAT lives in $SECRETS_FILE
+# as GITLAB_PERSONAL_ACCESS_TOKEN and is auto-forwarded under the same name.
+MCP_GITLAB_TYPE="npx"
+MCP_GITLAB_PACKAGE="@zereight/mcp-gitlab"
+MCP_GITLAB_NPX_ARGS=("-y")
+MCP_GITLAB_ENV=(
+  "GITLAB_API_URL=https://gitlab.dev.booklan.de/api/v4"
+  "GITLAB_READ_ONLY_MODE=true"
+)
+MCP_GITLAB_REQUIRES=("GITLAB_PERSONAL_ACCESS_TOKEN")
