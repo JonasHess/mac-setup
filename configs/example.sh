@@ -5,6 +5,15 @@
 #
 # This file is `source`d by setup.sh, so it is just shell variable assignments.
 # Every option below is optional — delete or leave empty anything you don't need.
+#
+# Subtracting entries: any list variable below can be trimmed by declaring a
+# companion <NAME>_REMOVE array (bash has no `-=` operator). This is most useful
+# when a config builds on configs/default.sh, but it works here too. Example:
+#   BREW_PACKAGES_REMOVE=( wireshark nmap )
+#   BREW_CASKS_REMOVE=( spotify )
+# Supported for: BREW_TAPS, BREW_PACKAGES(_ESSENTIAL), BREW_CASKS(_ESSENTIAL),
+# MAS_APPS, NPM_PACKAGES, PIP_PACKAGES, GEM_PACKAGES, SDKMAN_CANDIDATES,
+# MCP_SERVERS, INTELLIJ_DEFAULT_FOR, DOTFILES_FILES.
 # -----------------------------------------------------------------------------
 
 # === Homebrew taps =====================================================
@@ -45,6 +54,15 @@ BREW_CASKS=(
   # raycast
   # rectangle
   # visual-studio-code
+)
+
+# Subtract entries you don't want (handy when sourcing configs/default.sh).
+# These companion arrays drop the named items from BREW_PACKAGES / BREW_CASKS.
+BREW_PACKAGES_REMOVE=(
+  # wireshark
+)
+BREW_CASKS_REMOVE=(
+  # spotify
 )
 
 # Where casks install their .app bundles. Default: /Applications

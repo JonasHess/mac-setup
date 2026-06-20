@@ -84,6 +84,12 @@ source "$SCRIPT_DIR/lib/packages.sh"
 source "$SCRIPT_DIR/lib/intellij.sh"
 # shellcheck source=lib/mcp.sh
 source "$SCRIPT_DIR/lib/mcp.sh"
+# shellcheck source=lib/config.sh
+source "$SCRIPT_DIR/lib/config.sh"
+
+# Honor any <ARRAY>_REMOVE companion arrays the config declared (subtract apps
+# from the defaults). Runs now that the whole config is sourced.
+apply_config_removals
 
 # Shared timestamp for any backups made during this run.
 BACKUP_STAMP="$(date +%Y%m%d-%H%M%S)"
