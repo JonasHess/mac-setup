@@ -209,6 +209,12 @@ MCP_SERVERS=(
   postgres
   postgres-staging
   postgres-sandbox
+  postgres-mds
+  postgres-mds-staging
+  postgres-mds-sandbox
+  postgres-assets
+  postgres-assets-staging
+  postgres-assets-sandbox
   gitlab
 )
 
@@ -257,6 +263,72 @@ MCP_POSTGRES_SANDBOX_BIN="$HOME/.local/bin/postgres-mcp"
 MCP_POSTGRES_SANDBOX_PYTHON="3.12"
 MCP_POSTGRES_SANDBOX_REQUIRES=("DATABASE_URI=PUBX_SANDBOX_DATABASE_URI")
 MCP_POSTGRES_SANDBOX_ARGS=("--access-mode=restricted")
+
+# --- postgres-mds: local Docker postgres "mds" DB (crystaldba/postgres-mcp) -
+# `mds` is a separate database on the same instance/credentials as pubx — only
+# the database name in the connection URI differs. Reuses the postgres-mcp
+# binary installed by the `postgres` server above. Connection URI lives in
+# $SECRETS_FILE as MDS_DATABASE_URI (e.g.
+# postgresql://postgres:password@localhost:5432/mds).
+MCP_POSTGRES_MDS_TYPE="uv-git"
+MCP_POSTGRES_MDS_REPO="https://github.com/crystaldba/postgres-mcp.git"
+MCP_POSTGRES_MDS_DEST="$HOME/IdeaProjects/postgres-mcp"
+MCP_POSTGRES_MDS_BIN="$HOME/.local/bin/postgres-mcp"
+MCP_POSTGRES_MDS_PYTHON="3.12"
+MCP_POSTGRES_MDS_REQUIRES=("DATABASE_URI=MDS_DATABASE_URI")
+MCP_POSTGRES_MDS_ARGS=("--access-mode=unrestricted")
+
+# --- postgres-mds-staging: shared staging mds DB (read-only) ------------
+# Connection URI lives in $SECRETS_FILE as MDS_STAGING_DATABASE_URI.
+MCP_POSTGRES_MDS_STAGING_TYPE="uv-git"
+MCP_POSTGRES_MDS_STAGING_REPO="https://github.com/crystaldba/postgres-mcp.git"
+MCP_POSTGRES_MDS_STAGING_DEST="$HOME/IdeaProjects/postgres-mcp"
+MCP_POSTGRES_MDS_STAGING_BIN="$HOME/.local/bin/postgres-mcp"
+MCP_POSTGRES_MDS_STAGING_PYTHON="3.12"
+MCP_POSTGRES_MDS_STAGING_REQUIRES=("DATABASE_URI=MDS_STAGING_DATABASE_URI")
+MCP_POSTGRES_MDS_STAGING_ARGS=("--access-mode=restricted")
+
+# --- postgres-mds-sandbox: shared sandbox mds DB (read-only) ------------
+# Connection URI lives in $SECRETS_FILE as MDS_SANDBOX_DATABASE_URI.
+MCP_POSTGRES_MDS_SANDBOX_TYPE="uv-git"
+MCP_POSTGRES_MDS_SANDBOX_REPO="https://github.com/crystaldba/postgres-mcp.git"
+MCP_POSTGRES_MDS_SANDBOX_DEST="$HOME/IdeaProjects/postgres-mcp"
+MCP_POSTGRES_MDS_SANDBOX_BIN="$HOME/.local/bin/postgres-mcp"
+MCP_POSTGRES_MDS_SANDBOX_PYTHON="3.12"
+MCP_POSTGRES_MDS_SANDBOX_REQUIRES=("DATABASE_URI=MDS_SANDBOX_DATABASE_URI")
+MCP_POSTGRES_MDS_SANDBOX_ARGS=("--access-mode=restricted")
+
+# --- postgres-assets: local Docker postgres "assets" DB ------------------
+# `assets` (plural) is a separate database on the same instance/credentials as
+# pubx. Connection URI lives in $SECRETS_FILE as ASSETS_DATABASE_URI (e.g.
+# postgresql://postgres:password@localhost:5432/assets).
+MCP_POSTGRES_ASSETS_TYPE="uv-git"
+MCP_POSTGRES_ASSETS_REPO="https://github.com/crystaldba/postgres-mcp.git"
+MCP_POSTGRES_ASSETS_DEST="$HOME/IdeaProjects/postgres-mcp"
+MCP_POSTGRES_ASSETS_BIN="$HOME/.local/bin/postgres-mcp"
+MCP_POSTGRES_ASSETS_PYTHON="3.12"
+MCP_POSTGRES_ASSETS_REQUIRES=("DATABASE_URI=ASSETS_DATABASE_URI")
+MCP_POSTGRES_ASSETS_ARGS=("--access-mode=unrestricted")
+
+# --- postgres-assets-staging: shared staging assets DB (read-only) ------
+# Connection URI lives in $SECRETS_FILE as ASSETS_STAGING_DATABASE_URI.
+MCP_POSTGRES_ASSETS_STAGING_TYPE="uv-git"
+MCP_POSTGRES_ASSETS_STAGING_REPO="https://github.com/crystaldba/postgres-mcp.git"
+MCP_POSTGRES_ASSETS_STAGING_DEST="$HOME/IdeaProjects/postgres-mcp"
+MCP_POSTGRES_ASSETS_STAGING_BIN="$HOME/.local/bin/postgres-mcp"
+MCP_POSTGRES_ASSETS_STAGING_PYTHON="3.12"
+MCP_POSTGRES_ASSETS_STAGING_REQUIRES=("DATABASE_URI=ASSETS_STAGING_DATABASE_URI")
+MCP_POSTGRES_ASSETS_STAGING_ARGS=("--access-mode=restricted")
+
+# --- postgres-assets-sandbox: shared sandbox assets DB (read-only) ------
+# Connection URI lives in $SECRETS_FILE as ASSETS_SANDBOX_DATABASE_URI.
+MCP_POSTGRES_ASSETS_SANDBOX_TYPE="uv-git"
+MCP_POSTGRES_ASSETS_SANDBOX_REPO="https://github.com/crystaldba/postgres-mcp.git"
+MCP_POSTGRES_ASSETS_SANDBOX_DEST="$HOME/IdeaProjects/postgres-mcp"
+MCP_POSTGRES_ASSETS_SANDBOX_BIN="$HOME/.local/bin/postgres-mcp"
+MCP_POSTGRES_ASSETS_SANDBOX_PYTHON="3.12"
+MCP_POSTGRES_ASSETS_SANDBOX_REQUIRES=("DATABASE_URI=ASSETS_SANDBOX_DATABASE_URI")
+MCP_POSTGRES_ASSETS_SANDBOX_ARGS=("--access-mode=restricted")
 
 # --- gitlab: self-hosted MVB GitLab (zereight/mcp-gitlab, read-only) -----
 # Read-only mode: list/read projects, MRs, issues, files. Drop the
