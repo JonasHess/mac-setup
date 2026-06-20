@@ -31,7 +31,11 @@ A run does, in order:
 4. **macOS defaults** — runs your system-preferences script (e.g. `~/.osx`).
 5. **Wave 2 (the rest)** — installs `BREW_PACKAGES` / `BREW_CASKS` / `MAS_APPS`:
    all the heavier and optional tools and apps.
-6. **Language packages** — optional global npm / pip / gem installs.
+6. **"Open in IntelliJ"** — optionally builds the Finder "Open With" helper app
+   (`INTELLIJ_OPENER`).
+7. **Language packages** — optional global npm / pip / gem / SDKMAN installs.
+8. **MCP servers** — optionally installs and registers Claude Code MCP servers
+   (`MCP_SERVERS`), prompting for any missing secrets.
 
 ## Usage
 
@@ -50,20 +54,55 @@ A run does, in order:
 
 ## Adding your own config (use it on another Mac, or share it)
 
-1. Copy the template:
-   ```bash
-   cp configs/example.sh configs/<name>.sh
-   ```
-2. Edit `configs/<name>.sh` — it is fully commented. Set your Homebrew lists, your
-   dotfiles repo and files, and your macOS script. Leave anything empty to skip it.
-3. Run it:
-   ```bash
-   ./setup.sh configs/<name>.sh
-   ```
+There are two styles. Both produce a `configs/<name>.sh` you pass to `setup.sh`.
+
+**A. Standalone** — copy the fully-commented template and edit it:
+
+```bash
+cp configs/example.sh configs/<name>.sh
+# edit configs/<name>.sh, then:
+./setup.sh configs/<name>.sh
+```
+
+**B. Build on the shared defaults** (recommended when several configs mostly
+agree — e.g. `configs/jonas.sh` and `configs/michael.sh`). Put everything common
+in [`configs/default.sh`](configs/default.sh) and keep each person's config thin:
+
+```bash
+# configs/<name>.sh
+# 1. Personal identity — set BEFORE sourcing default.sh (SECRETS_FILE is
+#    derived from DOTFILES_DEST).
+DOTFILES_REPO="git@github.com:you/dotfiles.git"
+DOTFILES_DEST="$HOME/repos/dotfiles"
+
+# 2. Pull in the shared defaults.
+source "$(dirname "${BASH_SOURCE[0]}")/default.sh"
+
+# 3. Personal tweaks — AFTER sourcing: add, remove, or override.
+BREW_CASKS+=( jabra-direct )        # add an app
+BREW_CASKS_REMOVE=( spotify )       # drop a default app (see below)
+CLEAR_DOCK=true                     # override a shared scalar
+```
 
 Because each machine/person has its own config, you keep one shared script and as
 many configs as you have devices or users. Differences between machines are just
 differences between config files.
+
+### Adding and removing entries
+
+Any list variable can be extended with `+=( ... )` and trimmed with a companion
+`<NAME>_REMOVE=( ... )` array (bash has no `-=` operator). For example, to start
+from `default.sh` but skip a couple of defaults:
+
+```bash
+BREW_PACKAGES_REMOVE=( wireshark nmap )
+BREW_CASKS_REMOVE=( spotify )
+```
+
+`_REMOVE` works for `BREW_TAPS`, `BREW_PACKAGES(_ESSENTIAL)`,
+`BREW_CASKS(_ESSENTIAL)`, `MAS_APPS`, `NPM_PACKAGES`, `PIP_PACKAGES`,
+`GEM_PACKAGES`, `SDKMAN_CANDIDATES`, `MCP_SERVERS`, `INTELLIJ_DEFAULT_FOR`, and
+`DOTFILES_FILES`. Always preview with `--dry-run`.
 
 ## Config reference
 
@@ -89,6 +128,9 @@ All options are documented in [`configs/example.sh`](configs/example.sh). In sho
 | `CLEAR_DOCK` | `true` to empty the Dock of all pinned apps |
 | `NPM_PACKAGES` / `PIP_PACKAGES` / `GEM_PACKAGES` | Optional global packages |
 | `SDKMAN_CANDIDATES` | SDKMAN installs as `"<candidate> <version>"` (e.g. `"java 17.0.19-amzn"`); installs SDKMAN if missing |
+| `INTELLIJ_OPENER` | `true` to build the "Open in IntelliJ" Finder helper (`INTELLIJ_DEFAULT_FOR` sets default-handler extensions) |
+| `MCP_SERVERS` + `MCP_<NAME>_*` | Claude Code MCP servers to install/register (secrets via `SECRETS_FILE`) |
+| `<NAME>_REMOVE` | Companion array to drop entries from any list variable (e.g. `BREW_CASKS_REMOVE`) |
 
 ## Notes
 
