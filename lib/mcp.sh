@@ -48,6 +48,22 @@ install_mcp_servers() {
   [ "${#MCP_SERVERS[@]}" -gt 0 ] || return 0
   section "Installing Claude Code MCP servers"
 
+  # Let an interactive user opt out of the whole MCP step without aborting the
+  # run — installing servers clones repos, runs uv/npx, and prompts for any
+  # missing secrets, which a user may want to skip. Answering "n" skips *this*
+  # step only; "y" (the default) proceeds. Mirrors set_intellij_default_handlers.
+  if [ -t 0 ] && [ "${DRY_RUN:-false}" != "true" ]; then
+    info "About to install ${#MCP_SERVERS[@]} MCP server(s): ${MCP_SERVERS[*]}"
+    local _ans
+    read -r -p "    Install MCP servers now? [Y/n] " _ans
+    case "${_ans:-y}" in
+      [Nn]*)
+        warn "Skipping MCP server installation."
+        return 0
+        ;;
+    esac
+  fi
+
   if ! command -v claude >/dev/null 2>&1; then
     warn "claude CLI not on PATH — install Claude Code first. Skipping MCP servers."
     return 0
