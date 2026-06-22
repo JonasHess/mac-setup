@@ -225,13 +225,14 @@ SDKMAN_CANDIDATES=(
 SECRETS_FILE="${SECRETS_FILE:-$DOTFILES_DEST/.oh-my-zsh/custom/secrets.zsh}"
 MCP_SERVERS=(
   redmine
-  postgres
-  postgres-staging
-  postgres-sandbox
-  postgres-mds
+  postgres-pubx-local
+  postgres-pubx-staging
+  postgres-pubx-sandbox
+  postgres-pubx-prod
+  postgres-mds-local
   postgres-mds-staging
   postgres-mds-sandbox
-  postgres-assets
+  postgres-assets-local
   postgres-assets-staging
   postgres-assets-sandbox
   gitlab
@@ -246,56 +247,69 @@ MCP_REDMINE_PYTHON="3.12"
 MCP_REDMINE_ENV=("REDMINE_DOMAIN=https://pm.dev.booklan.de")
 MCP_REDMINE_REQUIRES=("REDMINE_API_KEY")
 
-# --- postgres: local Docker postgres "pubx" (crystaldba/postgres-mcp) -----
+# --- postgres-pubx-local: local Docker postgres "pubx" (crystaldba/postgres-mcp) -----
 # Unrestricted mode (writes allowed) — drop the --access-mode flag from ARGS
 # for read-only. Connection URI lives in $SECRETS_FILE as PUBX_DATABASE_URI
 # (e.g. postgresql://postgres:password@localhost:5432/pubx) and is forwarded
 # to the MCP server as DATABASE_URI via the REQUIRES rename syntax.
-MCP_POSTGRES_TYPE="uv-git"
-MCP_POSTGRES_REPO="https://github.com/crystaldba/postgres-mcp.git"
-MCP_POSTGRES_DEST="$HOME/IdeaProjects/postgres-mcp"
-MCP_POSTGRES_BIN="$HOME/.local/bin/postgres-mcp"
-MCP_POSTGRES_PYTHON="3.12"
-MCP_POSTGRES_REQUIRES=("DATABASE_URI=PUBX_DATABASE_URI")
-MCP_POSTGRES_ARGS=("--access-mode=unrestricted")
+MCP_POSTGRES_PUBX_LOCAL_TYPE="uv-git"
+MCP_POSTGRES_PUBX_LOCAL_REPO="https://github.com/crystaldba/postgres-mcp.git"
+MCP_POSTGRES_PUBX_LOCAL_DEST="$HOME/IdeaProjects/postgres-mcp"
+MCP_POSTGRES_PUBX_LOCAL_BIN="$HOME/.local/bin/postgres-mcp"
+MCP_POSTGRES_PUBX_LOCAL_PYTHON="3.12"
+MCP_POSTGRES_PUBX_LOCAL_REQUIRES=("DATABASE_URI=PUBX_DATABASE_URI")
+MCP_POSTGRES_PUBX_LOCAL_ARGS=("--access-mode=unrestricted")
 
-# --- postgres-staging: shared staging pubx DB (read-only) ---------------
-# Reuses the postgres-mcp binary installed by the `postgres` server above —
+# --- postgres-pubx-staging: shared staging pubx DB (read-only) ---------------
+# Reuses the postgres-mcp binary installed by the pubx-local server above —
 # only the DATABASE_URI env and access mode differ. Connection URI lives in
 # $SECRETS_FILE as PUBX_STAGING_DATABASE_URI.
-MCP_POSTGRES_STAGING_TYPE="uv-git"
-MCP_POSTGRES_STAGING_REPO="https://github.com/crystaldba/postgres-mcp.git"
-MCP_POSTGRES_STAGING_DEST="$HOME/IdeaProjects/postgres-mcp"
-MCP_POSTGRES_STAGING_BIN="$HOME/.local/bin/postgres-mcp"
-MCP_POSTGRES_STAGING_PYTHON="3.12"
-MCP_POSTGRES_STAGING_REQUIRES=("DATABASE_URI=PUBX_STAGING_DATABASE_URI")
-MCP_POSTGRES_STAGING_ARGS=("--access-mode=restricted")
+MCP_POSTGRES_PUBX_STAGING_TYPE="uv-git"
+MCP_POSTGRES_PUBX_STAGING_REPO="https://github.com/crystaldba/postgres-mcp.git"
+MCP_POSTGRES_PUBX_STAGING_DEST="$HOME/IdeaProjects/postgres-mcp"
+MCP_POSTGRES_PUBX_STAGING_BIN="$HOME/.local/bin/postgres-mcp"
+MCP_POSTGRES_PUBX_STAGING_PYTHON="3.12"
+MCP_POSTGRES_PUBX_STAGING_REQUIRES=("DATABASE_URI=PUBX_STAGING_DATABASE_URI")
+MCP_POSTGRES_PUBX_STAGING_ARGS=("--access-mode=restricted")
 
-# --- postgres-sandbox: shared sandbox pubx DB (read-only) ---------------
-# Reuses the postgres-mcp binary installed by the `postgres` server above —
+# --- postgres-pubx-sandbox: shared sandbox pubx DB (read-only) ---------------
+# Reuses the postgres-mcp binary installed by the pubx-local server above —
 # only the DATABASE_URI env and access mode differ. Connection URI lives in
 # $SECRETS_FILE as PUBX_SANDBOX_DATABASE_URI.
-MCP_POSTGRES_SANDBOX_TYPE="uv-git"
-MCP_POSTGRES_SANDBOX_REPO="https://github.com/crystaldba/postgres-mcp.git"
-MCP_POSTGRES_SANDBOX_DEST="$HOME/IdeaProjects/postgres-mcp"
-MCP_POSTGRES_SANDBOX_BIN="$HOME/.local/bin/postgres-mcp"
-MCP_POSTGRES_SANDBOX_PYTHON="3.12"
-MCP_POSTGRES_SANDBOX_REQUIRES=("DATABASE_URI=PUBX_SANDBOX_DATABASE_URI")
-MCP_POSTGRES_SANDBOX_ARGS=("--access-mode=restricted")
+MCP_POSTGRES_PUBX_SANDBOX_TYPE="uv-git"
+MCP_POSTGRES_PUBX_SANDBOX_REPO="https://github.com/crystaldba/postgres-mcp.git"
+MCP_POSTGRES_PUBX_SANDBOX_DEST="$HOME/IdeaProjects/postgres-mcp"
+MCP_POSTGRES_PUBX_SANDBOX_BIN="$HOME/.local/bin/postgres-mcp"
+MCP_POSTGRES_PUBX_SANDBOX_PYTHON="3.12"
+MCP_POSTGRES_PUBX_SANDBOX_REQUIRES=("DATABASE_URI=PUBX_SANDBOX_DATABASE_URI")
+MCP_POSTGRES_PUBX_SANDBOX_ARGS=("--access-mode=restricted")
 
-# --- postgres-mds: local Docker postgres "mds" DB (crystaldba/postgres-mcp) -
+# --- postgres-pubx-prod: shared prod pubx DB (read-only) ---------------------
+# Reuses the postgres-mcp binary installed by the pubx-local server above —
+# only the DATABASE_URI env and access mode differ. Restricted (read-only)
+# since it points at production (host pubx-prod-db2.cloud.gcp). Connection URI
+# lives in $SECRETS_FILE as PUBX_PROD_DATABASE_URI.
+MCP_POSTGRES_PUBX_PROD_TYPE="uv-git"
+MCP_POSTGRES_PUBX_PROD_REPO="https://github.com/crystaldba/postgres-mcp.git"
+MCP_POSTGRES_PUBX_PROD_DEST="$HOME/IdeaProjects/postgres-mcp"
+MCP_POSTGRES_PUBX_PROD_BIN="$HOME/.local/bin/postgres-mcp"
+MCP_POSTGRES_PUBX_PROD_PYTHON="3.12"
+MCP_POSTGRES_PUBX_PROD_REQUIRES=("DATABASE_URI=PUBX_PROD_DATABASE_URI")
+MCP_POSTGRES_PUBX_PROD_ARGS=("--access-mode=restricted")
+
+# --- postgres-mds-local: local Docker postgres "mds" DB (crystaldba/postgres-mcp) -
 # `mds` is a separate database on the same instance/credentials as pubx — only
 # the database name in the connection URI differs. Reuses the postgres-mcp
-# binary installed by the `postgres` server above. Connection URI lives in
+# binary installed by the pubx-local server above. Connection URI lives in
 # $SECRETS_FILE as MDS_DATABASE_URI (e.g.
 # postgresql://postgres:password@localhost:5432/mds).
-MCP_POSTGRES_MDS_TYPE="uv-git"
-MCP_POSTGRES_MDS_REPO="https://github.com/crystaldba/postgres-mcp.git"
-MCP_POSTGRES_MDS_DEST="$HOME/IdeaProjects/postgres-mcp"
-MCP_POSTGRES_MDS_BIN="$HOME/.local/bin/postgres-mcp"
-MCP_POSTGRES_MDS_PYTHON="3.12"
-MCP_POSTGRES_MDS_REQUIRES=("DATABASE_URI=MDS_DATABASE_URI")
-MCP_POSTGRES_MDS_ARGS=("--access-mode=unrestricted")
+MCP_POSTGRES_MDS_LOCAL_TYPE="uv-git"
+MCP_POSTGRES_MDS_LOCAL_REPO="https://github.com/crystaldba/postgres-mcp.git"
+MCP_POSTGRES_MDS_LOCAL_DEST="$HOME/IdeaProjects/postgres-mcp"
+MCP_POSTGRES_MDS_LOCAL_BIN="$HOME/.local/bin/postgres-mcp"
+MCP_POSTGRES_MDS_LOCAL_PYTHON="3.12"
+MCP_POSTGRES_MDS_LOCAL_REQUIRES=("DATABASE_URI=MDS_DATABASE_URI")
+MCP_POSTGRES_MDS_LOCAL_ARGS=("--access-mode=unrestricted")
 
 # --- postgres-mds-staging: shared staging mds DB (read-only) ------------
 # Connection URI lives in $SECRETS_FILE as MDS_STAGING_DATABASE_URI.
@@ -317,17 +331,17 @@ MCP_POSTGRES_MDS_SANDBOX_PYTHON="3.12"
 MCP_POSTGRES_MDS_SANDBOX_REQUIRES=("DATABASE_URI=MDS_SANDBOX_DATABASE_URI")
 MCP_POSTGRES_MDS_SANDBOX_ARGS=("--access-mode=restricted")
 
-# --- postgres-assets: local Docker postgres "assets" DB ------------------
+# --- postgres-assets-local: local Docker postgres "assets" DB ------------------
 # `assets` (plural) is a separate database on the same instance/credentials as
 # pubx. Connection URI lives in $SECRETS_FILE as ASSETS_DATABASE_URI (e.g.
 # postgresql://postgres:password@localhost:5432/assets).
-MCP_POSTGRES_ASSETS_TYPE="uv-git"
-MCP_POSTGRES_ASSETS_REPO="https://github.com/crystaldba/postgres-mcp.git"
-MCP_POSTGRES_ASSETS_DEST="$HOME/IdeaProjects/postgres-mcp"
-MCP_POSTGRES_ASSETS_BIN="$HOME/.local/bin/postgres-mcp"
-MCP_POSTGRES_ASSETS_PYTHON="3.12"
-MCP_POSTGRES_ASSETS_REQUIRES=("DATABASE_URI=ASSETS_DATABASE_URI")
-MCP_POSTGRES_ASSETS_ARGS=("--access-mode=unrestricted")
+MCP_POSTGRES_ASSETS_LOCAL_TYPE="uv-git"
+MCP_POSTGRES_ASSETS_LOCAL_REPO="https://github.com/crystaldba/postgres-mcp.git"
+MCP_POSTGRES_ASSETS_LOCAL_DEST="$HOME/IdeaProjects/postgres-mcp"
+MCP_POSTGRES_ASSETS_LOCAL_BIN="$HOME/.local/bin/postgres-mcp"
+MCP_POSTGRES_ASSETS_LOCAL_PYTHON="3.12"
+MCP_POSTGRES_ASSETS_LOCAL_REQUIRES=("DATABASE_URI=ASSETS_DATABASE_URI")
+MCP_POSTGRES_ASSETS_LOCAL_ARGS=("--access-mode=unrestricted")
 
 # --- postgres-assets-staging: shared staging assets DB (read-only) ------
 # Connection URI lives in $SECRETS_FILE as ASSETS_STAGING_DATABASE_URI.
