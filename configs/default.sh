@@ -232,9 +232,11 @@ MCP_SERVERS=(
   postgres-mds-local
   postgres-mds-staging
   postgres-mds-sandbox
+  postgres-mds-prod
   postgres-assets-local
   postgres-assets-staging
   postgres-assets-sandbox
+  postgres-assets-prod
   gitlab
 )
 
@@ -331,6 +333,18 @@ MCP_POSTGRES_MDS_SANDBOX_PYTHON="3.12"
 MCP_POSTGRES_MDS_SANDBOX_REQUIRES=("DATABASE_URI=MDS_SANDBOX_DATABASE_URI")
 MCP_POSTGRES_MDS_SANDBOX_ARGS=("--access-mode=restricted")
 
+# --- postgres-mds-prod: shared prod mds DB (read-only) ------------------
+# Restricted (read-only) since it points at production (host
+# pubx-prod-db2.cloud.gcp). Connection URI lives in $SECRETS_FILE as
+# MDS_PROD_DATABASE_URI.
+MCP_POSTGRES_MDS_PROD_TYPE="uv-git"
+MCP_POSTGRES_MDS_PROD_REPO="https://github.com/crystaldba/postgres-mcp.git"
+MCP_POSTGRES_MDS_PROD_DEST="$HOME/IdeaProjects/postgres-mcp"
+MCP_POSTGRES_MDS_PROD_BIN="$HOME/.local/bin/postgres-mcp"
+MCP_POSTGRES_MDS_PROD_PYTHON="3.12"
+MCP_POSTGRES_MDS_PROD_REQUIRES=("DATABASE_URI=MDS_PROD_DATABASE_URI")
+MCP_POSTGRES_MDS_PROD_ARGS=("--access-mode=restricted")
+
 # --- postgres-assets-local: local Docker postgres "assets" DB ------------------
 # `assets` (plural) is a separate database on the same instance/credentials as
 # pubx. Connection URI lives in $SECRETS_FILE as ASSETS_DATABASE_URI (e.g.
@@ -362,6 +376,18 @@ MCP_POSTGRES_ASSETS_SANDBOX_BIN="$HOME/.local/bin/postgres-mcp"
 MCP_POSTGRES_ASSETS_SANDBOX_PYTHON="3.12"
 MCP_POSTGRES_ASSETS_SANDBOX_REQUIRES=("DATABASE_URI=ASSETS_SANDBOX_DATABASE_URI")
 MCP_POSTGRES_ASSETS_SANDBOX_ARGS=("--access-mode=restricted")
+
+# --- postgres-assets-prod: shared prod assets DB (read-only) ------------
+# Restricted (read-only) since it points at production (host
+# pubx-prod-db2.cloud.gcp). Connection URI lives in $SECRETS_FILE as
+# ASSETS_PROD_DATABASE_URI.
+MCP_POSTGRES_ASSETS_PROD_TYPE="uv-git"
+MCP_POSTGRES_ASSETS_PROD_REPO="https://github.com/crystaldba/postgres-mcp.git"
+MCP_POSTGRES_ASSETS_PROD_DEST="$HOME/IdeaProjects/postgres-mcp"
+MCP_POSTGRES_ASSETS_PROD_BIN="$HOME/.local/bin/postgres-mcp"
+MCP_POSTGRES_ASSETS_PROD_PYTHON="3.12"
+MCP_POSTGRES_ASSETS_PROD_REQUIRES=("DATABASE_URI=ASSETS_PROD_DATABASE_URI")
+MCP_POSTGRES_ASSETS_PROD_ARGS=("--access-mode=restricted")
 
 # --- gitlab: self-hosted MVB GitLab (zereight/mcp-gitlab, read-only) -----
 # Read-only mode: list/read projects, MRs, issues, files. Drop the
