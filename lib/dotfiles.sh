@@ -22,9 +22,13 @@ clone_dotfiles() {
     # the remote is unreachable (offline / SSH / auth). Continue with what's
     # already checked out so the rest of the run (apps, etc.) still proceeds.
     info "Repo exists at $dest — updating to '$version'"
+    # One network round-trip only: fetch updates origin/* (the lone remote op,
+    # so a passphrase-protected key is asked for at most once), then checkout +
+    # a purely-local fast-forward merge against the ref we just fetched. (Using
+    # `pull` here would re-fetch and prompt for the key a second time.)
     if run git -C "$dest" fetch --prune origin \
        && run git -C "$dest" checkout "$version" \
-       && run git -C "$dest" pull --ff-only origin "$version"; then
+       && run git -C "$dest" merge --ff-only "origin/$version"; then
       :
     else
       warn "Could not update the dotfiles repo (offline, or SSH/auth issue) — continuing with the existing checkout."
