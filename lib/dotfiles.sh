@@ -22,7 +22,7 @@ clone_dotfiles() {
     # the remote is unreachable (offline / SSH / auth). Continue with what's
     # already checked out so the rest of the run (apps, etc.) still proceeds.
     info "Repo exists at $dest — updating to '$version'"
-    if run git -C "$dest" fetch --all --prune \
+    if run git -C "$dest" fetch --prune origin \
        && run git -C "$dest" checkout "$version" \
        && run git -C "$dest" pull --ff-only origin "$version"; then
       :
