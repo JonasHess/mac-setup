@@ -119,7 +119,7 @@ BREW_CASKS=(
   alt-tab
   appcleaner
   camunda-modeler
-  chromium
+  ungoogled-chromium
   cyberduck
   dbeaver-community
   docker-desktop
