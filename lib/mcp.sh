@@ -196,6 +196,19 @@ _install_one_mcp() {
   esac
 }
 
+# Run a uv command inside a checkout. On a real run the repo was just cloned,
+# so cd succeeds. Under --dry-run the clone was only echoed and $dest may not
+# exist — skip the cd in that case and just echo the command via `run`, so the
+# dry-run previews the full sequence instead of aborting on a failed cd.
+_mcp_uv_in() {
+  local dest="$1"; shift
+  if [ -d "$dest" ]; then
+    ( cd "$dest" && run "$@" )
+  else
+    run "$@"
+  fi
+}
+
 _mcp_install_uv_git() {
   local name="$1" u="$2"
   local repo dest bin python
@@ -222,15 +235,15 @@ _mcp_install_uv_git() {
   fi
 
   if [ -n "$python" ]; then
-    ( cd "$dest" && run uv python pin "$python" )
+    _mcp_uv_in "$dest" uv python pin "$python"
   fi
-  ( cd "$dest" && run uv sync )
+  _mcp_uv_in "$dest" uv sync
 
   # --force makes uv tool install idempotent (overwrite an existing tool env).
   if [ -n "$python" ]; then
-    ( cd "$dest" && run uv tool install --force --python "$python" . )
+    _mcp_uv_in "$dest" uv tool install --force --python "$python" .
   else
-    ( cd "$dest" && run uv tool install --force . )
+    _mcp_uv_in "$dest" uv tool install --force .
   fi
 
   local -a extra=()

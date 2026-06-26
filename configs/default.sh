@@ -238,6 +238,7 @@ MCP_SERVERS=(
   postgres-assets-sandbox
   postgres-assets-prod
   gitlab
+  jenkins
 )
 
 # --- redmine: MVB Redmine at pm.dev.booklan.de (snowild/redmine-mcp) -----
@@ -401,3 +402,28 @@ MCP_GITLAB_ENV=(
   "GITLAB_READ_ONLY_MODE=true"
 )
 MCP_GITLAB_REQUIRES=("GITLAB_PERSONAL_ACCESS_TOKEN")
+
+# --- jenkins: MVB Jenkins at build.dev.booklan.de (lanbaoshen/mcp-jenkins) ----
+# Read-only mode (query jobs/builds only) — drop the --read-only ARG to allow
+# build-triggering and other mutating tools. The server reads credentials from
+# lowercase env vars (jenkins_url / jenkins_username / jenkins_password); the
+# CLI flags it documents just set those same vars. Only the URL (not personal)
+# lives in ENV. Username and token are per-person and come from the shell env
+# (sourced from $SECRETS_FILE as JENKINS_USERNAME / JENKINS_API_TOKEN, prompted
+# if missing) and are forwarded via the REQUIRES rename syntax. Use a Jenkins
+# API token, not your account password.
+MCP_JENKINS_TYPE="uv-git"
+MCP_JENKINS_REPO="https://github.com/lanbaoshen/mcp-jenkins.git"
+MCP_JENKINS_DEST="$HOME/IdeaProjects/mcp-jenkins"
+MCP_JENKINS_BIN="$HOME/.local/bin/mcp-jenkins"
+MCP_JENKINS_PYTHON="3.12"
+MCP_JENKINS_ENV=("jenkins_url=https://build.dev.booklan.de")
+MCP_JENKINS_REQUIRES=(
+  "jenkins_username=JENKINS_USERNAME"
+  "jenkins_password=JENKINS_API_TOKEN"
+)
+# --no-jenkins-verify-ssl: build.dev.booklan.de currently serves an expired
+# cert (notAfter Oct 2025) with a mismatched intermediate, so TLS verification
+# fails. Skipping verification unblocks the MCP; drop this flag once the server
+# cert is renewed and the chain fixed.
+MCP_JENKINS_ARGS=("--read-only" "--no-jenkins-verify-ssl")
