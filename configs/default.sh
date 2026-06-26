@@ -239,6 +239,10 @@ MCP_SERVERS=(
   postgres-assets-prod
   gitlab
   jenkins
+  rabbitmq-local
+  rabbitmq-staging
+  rabbitmq-sandbox
+  rabbitmq-prod
 )
 
 # --- redmine: MVB Redmine at pm.dev.booklan.de (snowild/redmine-mcp) -----
@@ -427,3 +431,80 @@ MCP_JENKINS_REQUIRES=(
 # fails. Skipping verification unblocks the MCP; drop this flag once the server
 # cert is renewed and the chain fixed.
 MCP_JENKINS_ARGS=("--read-only" "--no-jenkins-verify-ssl")
+
+# --- rabbitmq-*: pubx RabbitMQ brokers via HTTP management API ---------------
+# (kmitchell/rabbitmq-mcp). One server per stage; they differ only in the
+# committed host/port/protocol ENV and the per-stage credentials forwarded from
+# $SECRETS_FILE. The server talks to the *management* API (the same host:port
+# you open in a browser), not AMQP. Credentials are forwarded as env vars via
+# the REQUIRES rename syntax and never written into ~/.claude.json.
+#
+# NOTE: this server has no read-only switch — it exposes mutating tools
+# (publish, purge/delete queues, etc.). For prod, point it at a RabbitMQ
+# management user with monitoring/read-only tags rather than an admin account.
+# All brokers below are served over plain http, so RABBITMQ_REJECT_UNAUTHORIZED
+# is irrelevant (TLS only); add RABBITMQ_PROTOCOL=https + that flag if a stage
+# moves behind TLS with a self-signed/expired cert (cf. the jenkins note above).
+
+# --- rabbitmq-local: local Docker RabbitMQ management UI (localhost:15672) ----
+# Username/password live in $SECRETS_FILE as RABBITMQ_LOCAL_USERNAME /
+# RABBITMQ_LOCAL_PASSWORD (the Docker default is usually guest / guest).
+MCP_RABBITMQ_LOCAL_TYPE="npx"
+MCP_RABBITMQ_LOCAL_PACKAGE="rabbitmq-mcp"
+MCP_RABBITMQ_LOCAL_NPX_ARGS=("-y")
+MCP_RABBITMQ_LOCAL_ENV=(
+  "RABBITMQ_HOST=localhost"
+  "RABBITMQ_MANAGEMENT_PORT=15672"
+  "RABBITMQ_PROTOCOL=http"
+)
+MCP_RABBITMQ_LOCAL_REQUIRES=(
+  "RABBITMQ_USERNAME=RABBITMQ_LOCAL_USERNAME"
+  "RABBITMQ_PASSWORD=RABBITMQ_LOCAL_PASSWORD"
+)
+
+# --- rabbitmq-staging: pubx-staging-rabbit-ui.cloud.gcp -----------------------
+# Credentials in $SECRETS_FILE as RABBITMQ_STAGING_USERNAME / _PASSWORD.
+MCP_RABBITMQ_STAGING_TYPE="npx"
+MCP_RABBITMQ_STAGING_PACKAGE="rabbitmq-mcp"
+MCP_RABBITMQ_STAGING_NPX_ARGS=("-y")
+MCP_RABBITMQ_STAGING_ENV=(
+  "RABBITMQ_HOST=pubx-staging-rabbit-ui.cloud.gcp"
+  "RABBITMQ_MANAGEMENT_PORT=80"
+  "RABBITMQ_PROTOCOL=http"
+)
+MCP_RABBITMQ_STAGING_REQUIRES=(
+  "RABBITMQ_USERNAME=RABBITMQ_STAGING_USERNAME"
+  "RABBITMQ_PASSWORD=RABBITMQ_STAGING_PASSWORD"
+)
+
+# --- rabbitmq-sandbox: pubx-sandbox-rabbit-ui.cloud.gcp -----------------------
+# Credentials in $SECRETS_FILE as RABBITMQ_SANDBOX_USERNAME / _PASSWORD.
+MCP_RABBITMQ_SANDBOX_TYPE="npx"
+MCP_RABBITMQ_SANDBOX_PACKAGE="rabbitmq-mcp"
+MCP_RABBITMQ_SANDBOX_NPX_ARGS=("-y")
+MCP_RABBITMQ_SANDBOX_ENV=(
+  "RABBITMQ_HOST=pubx-sandbox-rabbit-ui.cloud.gcp"
+  "RABBITMQ_MANAGEMENT_PORT=80"
+  "RABBITMQ_PROTOCOL=http"
+)
+MCP_RABBITMQ_SANDBOX_REQUIRES=(
+  "RABBITMQ_USERNAME=RABBITMQ_SANDBOX_USERNAME"
+  "RABBITMQ_PASSWORD=RABBITMQ_SANDBOX_PASSWORD"
+)
+
+# --- rabbitmq-prod: pubx-prod-rabbit-ui.cloud.gcp (use a read-only user) ------
+# Production broker. Prefer a monitoring/read-only management account here since
+# the server exposes mutating tools. Credentials in $SECRETS_FILE as
+# RABBITMQ_PROD_USERNAME / _PASSWORD.
+MCP_RABBITMQ_PROD_TYPE="npx"
+MCP_RABBITMQ_PROD_PACKAGE="rabbitmq-mcp"
+MCP_RABBITMQ_PROD_NPX_ARGS=("-y")
+MCP_RABBITMQ_PROD_ENV=(
+  "RABBITMQ_HOST=pubx-prod-rabbit-ui.cloud.gcp"
+  "RABBITMQ_MANAGEMENT_PORT=80"
+  "RABBITMQ_PROTOCOL=http"
+)
+MCP_RABBITMQ_PROD_REQUIRES=(
+  "RABBITMQ_USERNAME=RABBITMQ_PROD_USERNAME"
+  "RABBITMQ_PASSWORD=RABBITMQ_PROD_PASSWORD"
+)
