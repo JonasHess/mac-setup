@@ -9,7 +9,7 @@
 
 # 1. Personal scalars — set BEFORE sourcing default.sh (SECRETS_FILE is derived
 #    from DOTFILES_DEST in there).
-DOTFILES_REPO="git@github.com:zimmermq/dotfiles.git"
+DOTFILES_REPO="git@github.com:JonasHess/dotfiles.git"
 DOTFILES_DEST="$HOME/IdeaProjects/dotfiles"
 
 # 2. Shared defaults.
